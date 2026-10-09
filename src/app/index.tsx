@@ -24,8 +24,8 @@ const categories = [
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
 
-  const openExplore = () => {
-    router.push({ pathname: '/explore', params: search.trim() ? { q: search.trim() } : {} });
+  const openSearch = () => {
+    router.push({ pathname: '/products', params: search.trim() ? { q: search.trim() } : {} });
   };
 
   return (
@@ -50,14 +50,14 @@ export default function HomeScreen() {
             <TextInput
               value={search}
               onChangeText={setSearch}
-              onSubmitEditing={openExplore}
-              placeholder="Search food, fashion, services..."
+              onSubmitEditing={openSearch}
+              placeholder="Search products for sale..."
               placeholderTextColor="#93848A"
               returnKeyType="search"
               style={styles.searchInput}
-              accessibilityLabel="Search campus businesses"
+              accessibilityLabel="Search products for sale"
             />
-            <Pressable onPress={openExplore} style={({ pressed }) => [styles.searchButton, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Search">
+            <Pressable onPress={openSearch} style={({ pressed }) => [styles.searchButton, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Search">
               <Text style={styles.searchButtonText}>Go</Text>
             </Pressable>
           </View>
