@@ -24,7 +24,10 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Label>Account</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="person.crop.circle.fill" md="account_circle" />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="products" hidden />
+      <NativeTabs.Trigger name="products">
+        <NativeTabs.Trigger.Label>Shop</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="bag.fill" md="shopping_bag" />
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
