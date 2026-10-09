@@ -69,6 +69,11 @@ export default function HomeScreen() {
           <Pressable onPress={() => router.push('/explore')} accessibilityRole="button"><Text style={styles.seeAll}>See all ↗</Text></Pressable>
         </View>
 
+        <Pressable onPress={() => router.push('/products')} style={({ pressed }) => [styles.productsCta, pressed && styles.pressed]} accessibilityRole="button">
+          <View><Text style={styles.productsCtaTitle}>Shop campus products</Text><Text style={styles.productsCtaBody}>Compare prices and find your color.</Text></View>
+          <Text style={styles.productsCtaArrow}>↗</Text>
+        </Pressable>
+
         <View style={styles.categoryGrid}>
           {categories.map((category, index) => (
             <Pressable
@@ -131,6 +136,10 @@ const styles = StyleSheet.create({
   sectionTitle: { color: C.ink, fontSize: 20, fontWeight: '900', letterSpacing: -0.4 },
   sectionSubtitle: { color: C.muted, fontSize: 11, marginTop: 4 },
   seeAll: { color: C.burgundy, fontSize: 11, fontWeight: '800' },
+  productsCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingHorizontal: 16, paddingVertical: 14, borderRadius: 17, backgroundColor: C.white, borderWidth: 1, borderColor: C.border },
+  productsCtaTitle: { color: C.burgundy, fontSize: 13, fontWeight: '900' },
+  productsCtaBody: { color: C.muted, fontSize: 10, marginTop: 4 },
+  productsCtaArrow: { color: C.burgundy, fontSize: 21, fontWeight: '900' },
   categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
   categoryCard: { width: '48%', flexGrow: 1, flexBasis: '42%', minHeight: 155, backgroundColor: C.white, borderRadius: 20, padding: 15, borderWidth: 1, borderColor: C.border, gap: 7 },
   categoryCardTint: { backgroundColor: '#F8EFF2' },
