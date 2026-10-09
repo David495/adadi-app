@@ -10,6 +10,7 @@ const categories = ['All', 'Fashion', 'Beauty', 'Food & drinks', 'Electronics', 
 export default function ExploreScreen() {
   const params = useLocalSearchParams<{ q?: string; category?: string }>();
   const [search, setSearch] = useState(params.q ?? '');
+  const [debouncedSearch, setDebouncedSearch] = useState(params.q ?? '');
   const [category, setCategory] = useState(params.category ?? 'All');
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,10 +22,15 @@ export default function ExploreScreen() {
     if (params.category) setCategory(params.category);
   }, [params.q, params.category]);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => setDebouncedSearch(search), 350);
+    return () => clearTimeout(timeout);
+  }, [search]);
+
   const loadBusinesses = useCallback(async (signal?: AbortSignal) => {
     setError('');
     try {
-      const result = await fetchBusinesses({ search, category, limit: 20, offset: 0, signal });
+      const result = await fetchBusinesses({ search: debouncedSearch, category, limit: 20, offset: 0, signal });
       setBusinesses(result);
     } catch (err) {
       if (signal?.aborted) return;
@@ -35,7 +41,7 @@ export default function ExploreScreen() {
         setRefreshing(false);
       }
     }
-  }, [search, category]);
+  }, [debouncedSearch, category]);
 
   useEffect(() => {
     const controller = new AbortController();
