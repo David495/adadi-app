@@ -1,28 +1,53 @@
 import { useLocalSearchParams, router } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Business, fetchBusinesses, isSupabaseConfigured } from '@/lib/supabase-rest';
 
-const C = { burgundy: '#8B1E3F', cream: '#FAF8F6', ink: '#24171B', muted: '#76666C', border: '#EAE1E3', white: '#FFFFFF', pink: '#F4E4E9' };
-const categories = ['All', 'Food & drinks', 'Barbers & beauty', 'Fashion', 'Accommodation'];
+const C = { burgundy: '#8B1E3F', cream: '#FAF8F6', ink: '#24171B', muted: '#76666C', border: '#EAE1E3', white: '#FFFFFF', pink: '#F4E4E9', gold: '#D4A017' };
+const categories = ['All', 'Fashion', 'Beauty', 'Food & drinks', 'Electronics', 'Services'];
 
 export default function ExploreScreen() {
   const params = useLocalSearchParams<{ q?: string; category?: string }>();
   const [search, setSearch] = useState(params.q ?? '');
   const [category, setCategory] = useState(params.category ?? 'All');
+  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (params.q) setSearch(params.q);
     if (params.category) setCategory(params.category);
   }, [params.q, params.category]);
 
-  const activeCategory = categories.includes(category) ? category : 'All';
-  const summary = useMemo(() => {
-    const term = search.trim();
-    if (term) return 'Showing the search setup for “' + term + '”.';
-    if (activeCategory !== 'All') return 'Browse businesses in ' + activeCategory.toLowerCase() + '.';
-    return 'Explore services and shops around your campus.';
-  }, [search, activeCategory]);
+  const loadBusinesses = useCallback(async (signal?: AbortSignal) => {
+    setError('');
+    try {
+      const result = await fetchBusinesses({ search, category, limit: 20, offset: 0, signal });
+      setBusinesses(result);
+    } catch (err) {
+      if (signal?.aborted) return;
+      setError(err instanceof Error ? err.message : 'Something went wrong while loading businesses.');
+    } finally {
+      if (!signal?.aborted) {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    }
+  }, [search, category]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    void loadBusinesses(controller.signal);
+    return () => controller.abort();
+  }, [loadBusinesses]);
+
+  const retry = () => {
+    setRefreshing(true);
+    void loadBusinesses();
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -31,29 +56,80 @@ export default function ExploreScreen() {
         <Text style={styles.kicker}>THE CAMPUS DIRECTORY</Text>
         <Text style={styles.title}>Explore ADADI</Text>
         <Text style={styles.subtitle}>Find a business, service or product around the DUFUHS community.</Text>
+
         <View style={styles.searchWrap}>
           <Text style={styles.searchGlyph}>⌕</Text>
-          <TextInput value={search} onChangeText={setSearch} placeholder="What are you looking for?" placeholderTextColor="#93848A" returnKeyType="search" style={styles.searchInput} accessibilityLabel="Search listings" />
-          {search.length > 0 && <Pressable onPress={() => setSearch('')} accessibilityRole="button"><Text style={styles.clear}>×</Text></Pressable>}
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="What are you looking for?"
+            placeholderTextColor="#93848A"
+            returnKeyType="search"
+            style={styles.searchInput}
+            accessibilityLabel="Search businesses"
+          />
+          {search.length > 0 && <Pressable onPress={() => setSearch('')} accessibilityRole="button" accessibilityLabel="Clear search"><Text style={styles.clear}>×</Text></Pressable>}
         </View>
+
         <Text style={styles.sectionLabel}>CATEGORIES</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
           {categories.map(item => (
-            <Pressable key={item} onPress={() => setCategory(item)} style={[styles.chip, activeCategory === item && styles.chipActive]} accessibilityRole="button" accessibilityState={{ selected: activeCategory === item }}>
-              <Text style={[styles.chipText, activeCategory === item && styles.chipTextActive]}>{item}</Text>
+            <Pressable key={item} onPress={() => setCategory(item)} style={[styles.chip, category === item && styles.chipActive]} accessibilityRole="button" accessibilityState={{ selected: category === item }}>
+              <Text style={[styles.chipText, category === item && styles.chipTextActive]}>{item}</Text>
             </Pressable>
           ))}
         </ScrollView>
-        <View style={styles.infoCard}>
-          <View style={styles.infoIcon}><Text style={styles.infoEmoji}>✦</Text></View>
-          <Text style={styles.infoTitle}>Your campus, one marketplace.</Text>
-          <Text style={styles.infoBody}>{summary}</Text>
-          <View style={styles.divider} />
-          <Text style={styles.statusLabel}>LIVE LISTINGS CONNECTION</Text>
-          <Text style={styles.statusTitle}>Coming in the next setup step</Text>
-          <Text style={styles.statusBody}>This screen is ready for the Supabase connection. We’ll load real business data in small pages and cache results to keep mobile data usage low.</Text>
+
+        <View style={styles.resultsHeader}>
+          <Text style={styles.resultsTitle}>{category === 'All' ? 'Campus businesses' : category}</Text>
+          {!loading && !error && <Text style={styles.count}>{businesses.length} shown</Text>}
         </View>
-        <View style={styles.tip}><Text style={styles.tipIcon}>◉</Text><Text style={styles.tipText}>Data-saving by design: listings will load in batches, and images will only load when needed.</Text></View>
+
+        {!isSupabaseConfigured() ? (
+          <View style={styles.stateCard}>
+            <Text style={styles.stateTitle}>Connect ADADI data</Text>
+            <Text style={styles.stateBody}>Add your Supabase URL and publishable key to a local .env file using .env.example as the guide, then restart Expo.</Text>
+          </View>
+        ) : loading ? (
+          <View style={styles.stateCard}><ActivityIndicator size="large" color={C.burgundy} /><Text style={styles.stateBody}>Loading campus businesses…</Text></View>
+        ) : error ? (
+          <View style={styles.stateCard}>
+            <Text style={styles.stateTitle}>Couldn’t load businesses</Text>
+            <Text style={styles.stateBody}>{error}</Text>
+            <Pressable onPress={retry} disabled={refreshing} style={({ pressed }) => [styles.retryButton, pressed && styles.pressed, refreshing && styles.disabled]}>
+              {refreshing ? <ActivityIndicator color={C.white} /> : <Text style={styles.retryText}>Try again</Text>}
+            </Pressable>
+          </View>
+        ) : businesses.length === 0 ? (
+          <View style={styles.stateCard}>
+            <Text style={styles.stateTitle}>No matches yet</Text>
+            <Text style={styles.stateBody}>Try another search or choose a different category.</Text>
+            <Pressable onPress={() => { setSearch(''); setCategory('All'); }} style={styles.resetButton}><Text style={styles.resetText}>Clear filters</Text></Pressable>
+          </View>
+        ) : (
+          <View style={styles.businessList}>
+            {businesses.map(business => (
+              <View key={business.id} style={styles.businessCard}>
+                {business.logo_url ? (
+                  <Image source={{ uri: business.logo_url }} style={styles.businessImage} resizeMode="cover" />
+                ) : (
+                  <View style={styles.imageFallback}><Text style={styles.imageFallbackText}>{business.name.trim().slice(0, 1).toUpperCase()}</Text></View>
+                )}
+                <View style={styles.businessCopy}>
+                  <View style={styles.businessTitleRow}>
+                    <Text style={styles.businessName} numberOfLines={1}>{business.name}</Text>
+                    <View style={[styles.openPill, business.is_open === false && styles.closedPill]}><Text style={[styles.openText, business.is_open === false && styles.closedText]}>{business.is_open === false ? 'Closed' : 'Open'}</Text></View>
+                  </View>
+                  <Text style={styles.businessCategory} numberOfLines={1}>{business.category || 'Campus business'}</Text>
+                  {!!business.description && <Text style={styles.businessDescription} numberOfLines={2}>{business.description}</Text>}
+                  {!!business.address && <Text style={styles.businessAddress} numberOfLines={1}>⌖ {business.address}</Text>}
+                </View>
+              </View>
+            ))}
+            <Text style={styles.paginationNote}>Showing up to 20 businesses per request to help save mobile data.</Text>
+          </View>
+        )}
+        <View style={styles.tip}><Text style={styles.tipIcon}>◉</Text><Text style={styles.tipText}>Images are only loaded for businesses in this result list. Listings are limited to approved businesses.</Text></View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -77,16 +153,35 @@ const styles = StyleSheet.create({
   chipActive: { backgroundColor: C.burgundy, borderColor: C.burgundy },
   chipText: { color: C.muted, fontSize: 11, fontWeight: '700' },
   chipTextActive: { color: C.white },
-  infoCard: { backgroundColor: C.white, borderWidth: 1, borderColor: C.border, borderRadius: 24, padding: 20, marginTop: 4, gap: 10 },
-  infoIcon: { width: 44, height: 44, borderRadius: 15, backgroundColor: C.pink, alignItems: 'center', justifyContent: 'center' },
-  infoEmoji: { color: C.burgundy, fontSize: 24, fontWeight: '900' },
-  infoTitle: { color: C.ink, fontSize: 18, fontWeight: '900', marginTop: 3 },
-  infoBody: { color: C.muted, fontSize: 12, lineHeight: 18 },
-  divider: { height: 1, backgroundColor: C.border, marginVertical: 5 },
-  statusLabel: { color: C.burgundy, fontSize: 9, fontWeight: '900', letterSpacing: 1.1 },
-  statusTitle: { color: C.ink, fontSize: 14, fontWeight: '800' },
-  statusBody: { color: C.muted, fontSize: 11, lineHeight: 18 },
+  resultsHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 },
+  resultsTitle: { color: C.ink, fontSize: 17, fontWeight: '900' },
+  count: { color: C.muted, fontSize: 10 },
+  businessList: { gap: 10 },
+  businessCard: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: C.white, borderWidth: 1, borderColor: C.border, borderRadius: 18, padding: 12 },
+  businessImage: { width: 68, height: 68, borderRadius: 15, backgroundColor: C.pink },
+  imageFallback: { width: 68, height: 68, borderRadius: 15, backgroundColor: C.pink, alignItems: 'center', justifyContent: 'center' },
+  imageFallbackText: { color: C.burgundy, fontSize: 25, fontWeight: '900' },
+  businessCopy: { flex: 1, minWidth: 0, gap: 4 },
+  businessTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  businessName: { flex: 1, minWidth: 0, color: C.ink, fontSize: 13, fontWeight: '900' },
+  openPill: { borderRadius: 20, backgroundColor: '#E8F4ED', paddingHorizontal: 7, paddingVertical: 4 },
+  closedPill: { backgroundColor: '#F4E4E9' },
+  openText: { color: '#26734D', fontSize: 9, fontWeight: '800' },
+  closedText: { color: C.burgundy, fontSize: 9, fontWeight: '800' },
+  businessCategory: { color: C.burgundy, fontSize: 10, fontWeight: '700', textTransform: 'capitalize' },
+  businessDescription: { color: C.muted, fontSize: 10, lineHeight: 15 },
+  businessAddress: { color: C.muted, fontSize: 10 },
+  paginationNote: { color: C.muted, fontSize: 10, textAlign: 'center', lineHeight: 15, paddingVertical: 4 },
+  stateCard: { backgroundColor: C.white, borderWidth: 1, borderColor: C.border, borderRadius: 20, padding: 20, alignItems: 'center', gap: 10, minHeight: 130, justifyContent: 'center' },
+  stateTitle: { color: C.ink, fontSize: 15, fontWeight: '900', textAlign: 'center' },
+  stateBody: { color: C.muted, fontSize: 11, lineHeight: 17, textAlign: 'center' },
+  retryButton: { minWidth: 110, backgroundColor: C.burgundy, borderRadius: 12, paddingHorizontal: 18, paddingVertical: 11, alignItems: 'center', justifyContent: 'center', minHeight: 40 },
+  retryText: { color: C.white, fontSize: 12, fontWeight: '900' },
+  resetButton: { paddingHorizontal: 12, paddingVertical: 8 },
+  resetText: { color: C.burgundy, fontSize: 11, fontWeight: '900' },
   tip: { flexDirection: 'row', gap: 10, backgroundColor: '#F1E5E9', borderRadius: 16, padding: 14, alignItems: 'flex-start' },
   tipIcon: { color: C.burgundy, fontSize: 17, fontWeight: '900' },
   tipText: { color: C.burgundy, fontSize: 11, lineHeight: 17, flex: 1, fontWeight: '600' },
+  pressed: { opacity: 0.75 },
+  disabled: { opacity: 0.65 },
 });
