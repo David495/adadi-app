@@ -36,6 +36,10 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Label>Account</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="person.crop.circle.fill" md="account_circle" />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="business">
+        <NativeTabs.Trigger.Label>Sell</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="storefront.fill" md="storefront" />
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="expenses">
         <NativeTabs.Trigger.Label>Expenses</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="creditcard.fill" md="payments" />
