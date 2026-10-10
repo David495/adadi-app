@@ -20,6 +20,10 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Label>Shop</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="bag.fill" md="shopping_bag" />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="cart">
+        <NativeTabs.Trigger.Label>Cart</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="cart.fill" md="shopping_cart" />
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="messages">
         <NativeTabs.Trigger.Label>Messages</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="bubble.left.and.bubble.right.fill" md="chat" />
