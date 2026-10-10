@@ -102,8 +102,8 @@ export default function AccountScreen() {
 
         <View style={styles.businessCard}>
           <Text style={styles.businessTitle}>Business owner?</Text>
-          <Text style={styles.body}>Business management remains available on the ADADI website while we build the mobile business tools.</Text>
-          <Text onPress={() => router.push('/explore')} style={styles.link}>Continue exploring →</Text>
+          <Text style={styles.body}>Manage your business profile, products and incoming orders directly from the app.</Text>
+          <Text onPress={() => router.push('/business')} style={styles.link}>Open business workspace →</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
