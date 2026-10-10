@@ -183,7 +183,7 @@ export default function ProductsScreen() {
         ) : error ? (
           <View style={styles.stateCard}><Text style={styles.stateTitle}>Couldn’t load products</Text><Text style={styles.stateBody}>{error}</Text><Pressable onPress={() => { setRefreshing(true); void loadProducts(); }} disabled={refreshing} style={[styles.retryButton, refreshing && styles.disabled]}>{refreshing ? <ActivityIndicator color={C.white} /> : <Text style={styles.retryText}>Try again</Text>}</Pressable></View>
         ) : visibleProducts.length === 0 ? (
-          <View style={styles.stateCard}><Text style={styles.stateTitle}>No matching products</Text><Text style={styles.stateBody}>Try a different search or adjust your filters.</Text><Pressable onPress={clearFilters} style={styles.clearButton}><Text style={styles.clearButtonText}>Clear filters</Text></Pressable></View>
+          <View style={styles.stateCard}><Text style={styles.stateTitle}>No matching products</Text><Text style={styles.stateBody}>Try a different product name or adjust your filters. You can also search campus businesses.</Text><Pressable onPress={clearFilters} style={styles.clearButton} accessibilityRole="button"><Text style={styles.clearButtonText}>Clear filters</Text></Pressable><Pressable onPress={() => router.push({ pathname: '/explore', params: searchDraft.trim() ? { q: searchDraft.trim() } : {} })} style={styles.clearButton} accessibilityRole="button"><Text style={styles.clearButtonText}>Search businesses instead ↗</Text></Pressable></View>
         ) : (
           <View style={styles.productGrid}>
             {visibleProducts.map(product => (
