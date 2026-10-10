@@ -62,6 +62,7 @@ export default function ExploreScreen() {
         <Text style={styles.kicker}>THE CAMPUS DIRECTORY</Text>
         <Text style={styles.title}>Explore ADADI</Text>
         <Text style={styles.subtitle}>Find a business, service or product around the DUFUHS community.</Text>
+        <Pressable onPress={() => router.push('/products')} style={styles.productsLink} accessibilityRole="button"><Text style={styles.productsLinkText}>Browse products by price and color ↗</Text></Pressable>
 
         <View style={styles.searchWrap}>
           <Text style={styles.searchGlyph}>⌕</Text>
@@ -149,6 +150,8 @@ const styles = StyleSheet.create({
   kicker: { color: C.burgundy, fontSize: 10, fontWeight: '900', letterSpacing: 1.5, marginTop: 6 },
   title: { color: C.ink, fontSize: 30, fontWeight: '900', letterSpacing: -0.7 },
   subtitle: { color: C.muted, fontSize: 13, lineHeight: 20, marginTop: -8 },
+  productsLink: { alignSelf: 'flex-start', backgroundColor: C.pink, borderRadius: 12, paddingHorizontal: 13, paddingVertical: 10 },
+  productsLinkText: { color: C.burgundy, fontSize: 11, fontWeight: '900' },
   searchWrap: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 52, backgroundColor: C.white, borderRadius: 15, borderWidth: 1, borderColor: C.border, paddingHorizontal: 14 },
   searchGlyph: { color: C.burgundy, fontSize: 24 },
   searchInput: { flex: 1, minWidth: 0, color: C.ink, fontSize: 13, paddingVertical: 12 },

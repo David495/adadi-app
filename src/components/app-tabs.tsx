@@ -16,13 +16,33 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="magnifyingglass" md="search" />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="products">
+        <NativeTabs.Trigger.Label>Shop</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="bag.fill" md="shopping_bag" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="cart">
+        <NativeTabs.Trigger.Label>Cart</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="cart.fill" md="shopping_cart" />
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="messages">
         <NativeTabs.Trigger.Label>Messages</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="bubble.left.and.bubble.right.fill" md="chat" />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="help">
+        <NativeTabs.Trigger.Label>Help</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="questionmark.circle.fill" md="help" />
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="account">
         <NativeTabs.Trigger.Label>Account</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="person.crop.circle.fill" md="account_circle" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="business">
+        <NativeTabs.Trigger.Label>Sell</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="storefront.fill" md="storefront" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="expenses">
+        <NativeTabs.Trigger.Label>Expenses</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="creditcard.fill" md="payments" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );
