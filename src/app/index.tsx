@@ -51,11 +51,11 @@ export default function HomeScreen() {
               value={search}
               onChangeText={setSearch}
               onSubmitEditing={openSearch}
-              placeholder="Search products for sale..."
+              placeholder="Search products or businesses..."
               placeholderTextColor="#93848A"
               returnKeyType="search"
               style={styles.searchInput}
-              accessibilityLabel="Search products for sale"
+              accessibilityLabel="Search products or businesses"
             />
             <Pressable onPress={openSearch} style={({ pressed }) => [styles.searchButton, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Search">
               <Text style={styles.searchButtonText}>Go</Text>
