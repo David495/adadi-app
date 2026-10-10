@@ -103,7 +103,7 @@ export type Product = {
   price: number;
   image_url: string | null;
   is_available: boolean | null;
-  business: { name: string; status: string } | { name: string; status: string }[] | null;
+  business: { id: string; name: string; status: string } | { id: string; name: string; status: string }[] | null;
 };
 
 export async function fetchProducts(options: {
@@ -121,7 +121,7 @@ export async function fetchProducts(options: {
 
   const limit = Math.min(Math.max(options.limit ?? 24, 1), 30);
   const params = new URLSearchParams({
-    select: 'id,name,slug,description,price,image_url,is_available,business:businesses!inner(name,status)',
+    select: 'id,name,slug,description,price,image_url,is_available,business:businesses!inner(id,name,status)',
     'business.status': 'eq.approved',
     is_available: 'eq.true',
     order: 'created_at.desc',
