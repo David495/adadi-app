@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.75 },
   disabled: { opacity: 0.65 },
   modalRoot: { flex: 1, justifyContent: 'flex-end' },
-  modalBackdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(20, 10, 14, 0.48)' },
+  modalBackdrop: { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(20, 10, 14, 0.48)' },
   filterSheet: { maxHeight: '88%', backgroundColor: C.cream, borderTopLeftRadius: 25, borderTopRightRadius: 25, paddingTop: 10, paddingHorizontal: 20, paddingBottom: 18, gap: 12 },
   sheetHandle: { alignSelf: 'center', width: 42, height: 4, borderRadius: 2, backgroundColor: '#D6C9CD', marginBottom: 2 },
   sheetHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingBottom: 4 },
