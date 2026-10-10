@@ -28,6 +28,10 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Label>Shop</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="bag.fill" md="shopping_bag" />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="expenses">
+        <NativeTabs.Trigger.Label>Expenses</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="creditcard.fill" md="payments" />
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
