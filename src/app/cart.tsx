@@ -22,6 +22,7 @@ export default function CartScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [reference, setReference] = useState('');
+  const [authorizationUrl, setAuthorizationUrl] = useState('');
   const [orderTotal, setOrderTotal] = useState<number | null>(null);
   const [orderNumber, setOrderNumber] = useState('');
 
@@ -65,6 +66,7 @@ export default function CartScreen() {
         await clearCart();
         setItems([]);
         setReference('');
+        setAuthorizationUrl('');
         Alert.alert('Payment successful', 'Order ' + (result.orderNumber || orderNumber || '') + ' is confirmed. You can track the order from your ADADI account.');
       } else if (response.status === 409) {
         setError('Paystack has not confirmed this payment yet. If you just paid, wait a moment and tap Verify payment again.');
@@ -87,6 +89,18 @@ export default function CartScreen() {
         { text: 'Not now', style: 'cancel' },
         { text: 'Sign in', onPress: () => router.push('/account') },
       ]);
+      return;
+    }
+    if (reference && authorizationUrl) {
+      setBusy(true);
+      try {
+        await WebBrowser.openBrowserAsync(authorizationUrl, { presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN });
+        await verifyPayment(reference);
+      } catch {
+        setError('Could not reopen Paystack checkout. Please try again.');
+      } finally {
+        setBusy(false);
+      }
       return;
     }
     if (!items.length) { setError('Your cart is empty. Add products before checking out.'); return; }
@@ -113,6 +127,7 @@ export default function CartScreen() {
         throw new Error(typeof result.error === 'string' ? result.error : 'Could not initialize Paystack checkout.');
       }
       setReference(result.reference);
+      setAuthorizationUrl(result.authorizationUrl);
       setOrderNumber(result.orderNumber || '');
       setOrderTotal(Number(result.breakdown?.total) || null);
       await WebBrowser.openBrowserAsync(result.authorizationUrl, { presentationStyle: WebBrowser.WebBrowserPresentationStyle.FULL_SCREEN });
@@ -183,7 +198,7 @@ export default function CartScreen() {
               {!!error && <Text style={styles.error}>{error}</Text>}
               {orderTotal !== null && <View style={styles.finalTotalRow}><Text style={styles.body}>Last calculated total</Text><Text style={styles.subtotal}>{money(orderTotal)}</Text></View>}
               <Pressable onPress={() => void startPayment()} disabled={busy} style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed, busy && styles.disabled]}>
-                {busy ? <ActivityIndicator color={C.white} /> : <Text style={styles.primaryText}>Pay securely with Paystack →</Text>}
+                {busy ? <ActivityIndicator color={C.white} /> : <Text style={styles.primaryText}>{reference ? 'Resume Paystack checkout →' : 'Pay securely with Paystack →'}</Text>}
               </Pressable>
               {!!reference && <Pressable onPress={() => void verifyPayment(reference)} disabled={busy} style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed, busy && styles.disabled]}>{busy ? <ActivityIndicator color={C.burgundy} /> : <Text style={styles.secondaryText}>Verify payment</Text>}</Pressable>}
               <Text style={styles.secureNote}>ADADI never marks an order paid based only on the app. Paystack is verified by the server before your order is confirmed.</Text>
