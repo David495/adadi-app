@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { fetchProducts, isSupabaseConfigured, Product } from '@/lib/supabase-rest';
+import { addCartItem } from '@/lib/cart';
 
 const C = { burgundy: '#8B1E3F', burgundyDark: '#64152E', cream: '#FAF8F6', ink: '#24171B', muted: '#76666C', border: '#EAE1E3', white: '#FFFFFF', pink: '#F4E4E9', gold: '#D4A017' };
 const colors = [
@@ -193,6 +194,36 @@ export default function ProductsScreen() {
                   <Text style={styles.productName} numberOfLines={2}>{product.name}</Text>
                   <Text style={styles.productPrice}>{money(Number(product.price) || 0)}</Text>
                   <Text style={styles.businessName} numberOfLines={1}>{businessName(product)}</Text>
+                  <Pressable
+                    onPress={async () => {
+                      const business = Array.isArray(product.business) ? product.business[0] : product.business;
+                      if (!business?.id) {
+                        Alert.alert('Can’t add this product', 'The business information is missing. Please refresh and try again.');
+                        return;
+                      }
+                      try {
+                        const result = await addCartItem({
+                          productId: product.id,
+                          businessId: business.id,
+                          name: product.name,
+                          businessName: business.name,
+                          price: Number(product.price) || 0,
+                          imageUrl: product.image_url,
+                        });
+                        if (result.differentBusiness) {
+                          Alert.alert('One business per order', 'Your cart already contains items from another business. Complete that order first, or clear your cart.');
+                          return;
+                        }
+                        Alert.alert('Added to cart', product.name + ' is in your cart.');
+                      } catch {
+                        Alert.alert('Couldn’t update cart', 'Please try again.');
+                      }
+                    }}
+                    style={({ pressed }) => [styles.addToCartButton, pressed && styles.pressed]}
+                    accessibilityRole="button"
+                  >
+                    <Text style={styles.addToCartText}>Add to cart</Text>
+                  </Pressable>
                 </View>
               </View>
             ))}
@@ -289,6 +320,8 @@ const styles = StyleSheet.create({
   productName: { color: C.ink, fontSize: 12, lineHeight: 17, fontWeight: '800', minHeight: 34 },
   productPrice: { color: C.burgundy, fontSize: 15, fontWeight: '900' },
   businessName: { color: C.muted, fontSize: 10 },
+  addToCartButton: { backgroundColor: C.burgundy, borderRadius: 10, paddingVertical: 9, paddingHorizontal: 10, alignItems: 'center', marginTop: 7, minHeight: 34, justifyContent: 'center' },
+  addToCartText: { color: C.white, fontSize: 10, fontWeight: '900' },
   stateCard: { backgroundColor: C.white, borderWidth: 1, borderColor: C.border, borderRadius: 20, padding: 20, alignItems: 'center', gap: 10, minHeight: 130, justifyContent: 'center' },
   stateTitle: { color: C.ink, fontSize: 15, fontWeight: '900', textAlign: 'center' },
   stateBody: { color: C.muted, fontSize: 11, lineHeight: 17, textAlign: 'center' },
