@@ -59,6 +59,8 @@ export async function fetchBusinesses(options: {
     const categorySearch: Record<string, string> = {
       Fashion: 'fashion',
       Beauty: 'beauty',
+      'Barbers & beauty': 'beauty',
+      Accommodation: 'accommodation',
       'Food & drinks': 'restaurant',
       Electronics: 'electronics',
       Services: 'service',
