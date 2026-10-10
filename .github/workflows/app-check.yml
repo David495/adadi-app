@@ -1,13 +1,13 @@
 name: ADADI app checks
 
 on:
-  push:
-    branches:
-      - main
-      - feat/product-price-color-filters
   pull_request:
     branches:
       - main
+
+concurrency:
+  group: adadi-app-checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   check:
