@@ -130,7 +130,7 @@ export default function BusinessScreen() {
 
   const activeProducts = useMemo(() => products.filter(item => item.is_available !== false).length, [products]);
   const pendingOrders = useMemo(() => orders.filter(order => !['completed', 'cancelled'].includes(order.order_status || order.status)).length, [orders]);
-  const sales = useMemo(() => orders.filter(order => (order.payment_status || '').toLowerCase() === 'success').reduce((sum, order) => sum + Number(order.total ?? order.total_amount ?? 0), 0), [orders]);
+  const sales = useMemo(() => orders.filter(order => ['success', 'paid'].includes((order.payment_status || '').toLowerCase())).reduce((sum, order) => sum + Number(order.total ?? order.total_amount ?? 0), 0), [orders]);
 
   const openNewProduct = () => {
     setEditingProduct(null); setProductName(''); setProductPrice(''); setProductDescription(''); setProductImage('');
@@ -225,7 +225,7 @@ export default function BusinessScreen() {
   const updateOrderStatus = async (order: Order, next: OrderStatus) => {
     if (!session || !business) return;
     if (next === 'confirmed' || next === 'preparing' || next === 'ready' || next === 'completed') {
-      if ((order.payment_status || '').toLowerCase() !== 'success') {
+      if (!['success', 'paid'].includes((order.payment_status || '').toLowerCase())) {
         Alert.alert('Payment not confirmed', 'This order is not marked as paid. Confirm payment in ADADI before preparing or completing it.');
         return;
       }
@@ -362,7 +362,7 @@ function ProductRow({ item, onEdit, onToggle, onDelete, busy }: { item: Product;
 function OrderCard({ order, onStatus, busy }: { order: Order; onStatus: (status: OrderStatus) => void; busy: boolean }) {
   const current = (order.order_status || order.status || 'pending').toLowerCase() as OrderStatus;
   const amount = Number(order.total ?? order.total_amount ?? 0);
-  const paid = (order.payment_status || '').toLowerCase() === 'success';
+  const paid = ['success', 'paid'].includes((order.payment_status || '').toLowerCase());
   const nextStatus = STATUSES.filter(item => item !== current && (item !== 'confirmed' && item !== 'preparing' && item !== 'ready' && item !== 'completed' || paid));
   return <View style={styles.orderCard}>
     <View style={styles.orderTop}><View style={{ flex: 1 }}><Text style={styles.rowTitle}>Order {order.order_number || order.id.slice(0, 8)}</Text><Text style={styles.muted}>{new Date(order.created_at).toLocaleDateString()}</Text></View><Text style={styles.rowPrice}>{money(amount)}</Text></View>
