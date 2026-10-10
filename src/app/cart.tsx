@@ -6,7 +6,14 @@ import * as WebBrowser from 'expo-web-browser';
 import { clearCart, getCart, CartItem, updateCartQuantity } from '@/lib/cart';
 import { displayUserName, getMobileSession, MobileSession } from '@/lib/mobile-auth';
 
-const API_BASE = 'https://adadi247.com';
+const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL?.replace(/\/$/, '');
+
+function getApiBase() {
+  if (!API_BASE) {
+    throw new Error('Checkout is not configured for this build. Please contact the ADADI test administrator.');
+  }
+  return API_BASE;
+}
 const C = { burgundy: '#8B1E3F', burgundyDark: '#64152E', cream: '#FAF8F6', ink: '#24171B', muted: '#76666C', border: '#EAE1E3', white: '#FFFFFF', pink: '#F4E4E9', gold: '#D4A017' };
 const money = (value: number) => '₦' + Math.round(value).toLocaleString('en-NG');
 
@@ -56,7 +63,7 @@ export default function CartScreen() {
     setBusy(true);
     setError('');
     try {
-      const response = await fetch(API_BASE + '/api/paystack/order/verify', {
+      const response = await fetch(getApiBase() + '/api/paystack/order/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
         body: JSON.stringify({ reference: paymentReference }),
@@ -109,7 +116,7 @@ export default function CartScreen() {
 
     setBusy(true);
     try {
-      const response = await fetch(API_BASE + '/api/paystack/order/initialize', {
+      const response = await fetch(getApiBase() + '/api/paystack/order/initialize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
         body: JSON.stringify({
