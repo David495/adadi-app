@@ -96,7 +96,7 @@ export default function HomeScreen() {
           <View style={styles.featureCopy}>
             <Text style={styles.featureTitle}>Own a campus business?</Text>
             <Text style={styles.featureBody}>Get ready to bring your business closer to the people who need it.</Text>
-            <Pressable onPress={() => router.push('/account')} style={({ pressed }) => [styles.featureLink, pressed && styles.pressed]} accessibilityRole="button">
+            <Pressable onPress={() => router.push('/business')} style={({ pressed }) => [styles.featureLink, pressed && styles.pressed]} accessibilityRole="button">
               <Text style={styles.featureLinkText}>Business access <Text style={styles.featureLinkArrow}>→</Text></Text>
             </Pressable>
           </View>
