@@ -1,6 +1,7 @@
 import { useLocalSearchParams, router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Business, fetchBusinesses, isSupabaseConfigured } from '@/lib/supabase-rest';
 
@@ -118,7 +119,7 @@ export default function ExploreScreen() {
             {businesses.map(business => (
               <View key={business.id} style={styles.businessCard}>
                 {business.logo_url ? (
-                  <Image source={{ uri: business.logo_url }} style={styles.businessImage} resizeMode="cover" />
+                  <Image source={{ uri: business.logo_url }} style={styles.businessImage} contentFit="cover" cachePolicy="disk" transition={120} />
                 ) : (
                   <View style={styles.imageFallback}><Text style={styles.imageFallbackText}>{business.name.trim().slice(0, 1).toUpperCase()}</Text></View>
                 )}
