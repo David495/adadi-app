@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { fetchProducts, isSupabaseConfigured, Product } from '@/lib/supabase-rest';
@@ -189,7 +190,7 @@ export default function ProductsScreen() {
           <View style={styles.productGrid}>
             {visibleProducts.map(product => (
               <View key={product.id} style={styles.productCard}>
-                {product.image_url ? <Image source={{ uri: product.image_url }} style={styles.productImage} resizeMode="cover" /> : <View style={styles.productImageFallback}><Text style={styles.fallbackEmoji}>🛍️</Text></View>}
+                {product.image_url ? <Image source={{ uri: product.image_url }} style={styles.productImage} contentFit="cover" cachePolicy="disk" transition={120} /> : <View style={styles.productImageFallback}><Text style={styles.fallbackEmoji}>🛍️</Text></View>}
                 <View style={styles.productInfo}>
                   <Text style={styles.productName} numberOfLines={2}>{product.name}</Text>
                   <Text style={styles.productPrice}>{money(Number(product.price) || 0)}</Text>
