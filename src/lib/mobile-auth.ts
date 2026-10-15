@@ -107,7 +107,9 @@ export async function getMobileSession(): Promise<MobileSession | null> {
     };
     await saveSession(refreshed);
     return refreshed;
-  } catch {
+  } catch (error) {
+    // Keep the stored session during temporary network failures so offline users are not logged out.
+    if (error instanceof TypeError) return session;
     await saveSession(null);
     return null;
   }
