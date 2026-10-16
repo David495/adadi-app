@@ -1,3 +1,4 @@
+﻿import BackButton from '@/components/back-button';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,19 +8,20 @@ const C = { burgundy: '#8B1E3F', cream: '#FAF8F6', ink: '#24171B', muted: '#7666
 export default function MessagesScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackButton />
       <View style={styles.content}>
         <Text style={styles.kicker}>STAY IN TOUCH</Text>
         <Text style={styles.title}>Messages</Text>
         <Text style={styles.subtitle}>Keep your conversations with campus businesses in one place.</Text>
         <View style={styles.card}>
-          <View style={styles.icon}><Text style={styles.iconText}>✉</Text></View>
+          <View style={styles.icon}><Text style={styles.iconText}>âœ‰</Text></View>
           <Text style={styles.cardTitle}>Your conversations will show up here</Text>
           <Text style={styles.cardBody}>Sign in to access your messages and continue conversations with businesses.</Text>
           <View style={styles.notice}>
             <Text style={styles.noticeTitle}>A quick privacy note</Text>
             <Text style={styles.noticeBody}>ADADI messages are not end-to-end encrypted. Avoid sending passwords, bank details or other sensitive information.</Text>
           </View>
-          <Text onPress={() => router.push('/account')} style={styles.link}>Go to account →</Text>
+          <Text onPress={() => router.push('/account')} style={styles.link}>Go to account â†’</Text>
         </View>
       </View>
     </SafeAreaView>
@@ -42,3 +44,4 @@ const styles = StyleSheet.create({
   noticeBody: { color: '#795B12', fontSize: 11, lineHeight: 17 },
   link: { color: C.burgundy, fontSize: 12, fontWeight: '900', paddingTop: 4 },
 });
+

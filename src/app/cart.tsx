@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+﻿import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
@@ -15,7 +15,7 @@ function getApiBase() {
   return API_BASE;
 }
 const C = { burgundy: '#8B1E3F', burgundyDark: '#64152E', cream: '#FAF8F6', ink: '#24171B', muted: '#76666C', border: '#EAE1E3', white: '#FFFFFF', pink: '#F4E4E9', gold: '#D4A017' };
-const money = (value: number) => '₦' + Math.round(value).toLocaleString('en-NG');
+const money = (value: number) => 'â‚¦' + Math.round(value).toLocaleString('en-NG');
 
 export default function CartScreen() {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -151,14 +151,14 @@ export default function CartScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Pressable onPress={() => router.back()} style={styles.back}><Text style={styles.backText}>‹ Back to shopping</Text></Pressable>
+        <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} style={styles.back}><Text style={styles.backText}>â€¹ Back to shopping</Text></Pressable>
         <Text style={styles.kicker}>YOUR ADADI ORDER</Text>
         <Text style={styles.title}>Cart & checkout</Text>
-        <Text style={styles.subtitle}>Secure Paystack checkout. Your final amount and business split are calculated by ADADI’s server.</Text>
+        <Text style={styles.subtitle}>Secure Paystack checkout. Your final amount and business split are calculated by ADADIâ€™s server.</Text>
 
-        {loading ? <View style={styles.stateCard}><ActivityIndicator color={C.burgundy} /><Text style={styles.body}>Loading your cart…</Text></View> : items.length === 0 ? (
+        {loading ? <View style={styles.stateCard}><ActivityIndicator color={C.burgundy} /><Text style={styles.body}>Loading your cartâ€¦</Text></View> : items.length === 0 ? (
           <View style={styles.stateCard}>
-            <Text style={styles.emptyEmoji}>🛍️</Text>
+            <Text style={styles.emptyEmoji}>ðŸ›ï¸</Text>
             <Text style={styles.stateTitle}>Your cart is empty</Text>
             <Text style={styles.body}>Browse products and add items from one business to begin an order.</Text>
             <Pressable onPress={() => router.push('/products')} style={styles.primaryButton}><Text style={styles.primaryText}>Browse products</Text></Pressable>
@@ -169,12 +169,12 @@ export default function CartScreen() {
               <Text style={styles.sectionTitle}>{items[0].businessName}</Text>
               {items.map(item => (
                 <View key={item.productId} style={styles.itemRow}>
-                  {item.imageUrl ? <Image source={{ uri: item.imageUrl }} style={styles.itemImage} resizeMode="cover" /> : <View style={styles.itemFallback}><Text>🛍️</Text></View>}
+                  {item.imageUrl ? <Image source={{ uri: item.imageUrl }} style={styles.itemImage} resizeMode="cover" /> : <View style={styles.itemFallback}><Text>ðŸ›ï¸</Text></View>}
                   <View style={styles.itemCopy}>
                     <Text style={styles.itemName}>{item.name}</Text>
                     <Text style={styles.itemPrice}>{money(item.price)} each</Text>
                     <View style={styles.quantityRow}>
-                      <Pressable onPress={() => void changeQuantity(item.productId, item.quantity - 1)} style={styles.quantityButton}><Text style={styles.quantityText}>−</Text></Pressable>
+                      <Pressable onPress={() => void changeQuantity(item.productId, item.quantity - 1)} style={styles.quantityButton}><Text style={styles.quantityText}>âˆ’</Text></Pressable>
                       <Text style={styles.quantityValue}>{item.quantity}</Text>
                       <Pressable onPress={() => void changeQuantity(item.productId, item.quantity + 1)} style={styles.quantityButton}><Text style={styles.quantityText}>+</Text></Pressable>
                       <Text style={styles.lineTotal}>{money(item.price * item.quantity)}</Text>
@@ -189,7 +189,7 @@ export default function CartScreen() {
 
             <View style={styles.formCard}>
               <Text style={styles.sectionTitle}>Customer details</Text>
-              {!session && <View style={styles.signInNotice}><Text style={styles.body}>You need an ADADI account to pay.</Text><Pressable onPress={() => router.push('/account')}><Text style={styles.link}>Sign in / create account →</Text></Pressable></View>}
+              {!session && <View style={styles.signInNotice}><Text style={styles.body}>You need an ADADI account to pay.</Text><Pressable onPress={() => router.push('/account')}><Text style={styles.link}>Sign in / create account â†’</Text></Pressable></View>}
               <Text style={styles.label}>Full name</Text>
               <TextInput value={name} onChangeText={setName} placeholder="Your name" placeholderTextColor="#93848A" style={styles.input} />
               <Text style={styles.label}>Email</Text>
@@ -205,7 +205,7 @@ export default function CartScreen() {
               {!!error && <Text style={styles.error}>{error}</Text>}
               {orderTotal !== null && <View style={styles.finalTotalRow}><Text style={styles.body}>Last calculated total</Text><Text style={styles.subtotal}>{money(orderTotal)}</Text></View>}
               <Pressable onPress={() => void startPayment()} disabled={busy} style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed, busy && styles.disabled]}>
-                {busy ? <ActivityIndicator color={C.white} /> : <Text style={styles.primaryText}>{reference ? 'Resume Paystack checkout →' : 'Pay securely with Paystack →'}</Text>}
+                {busy ? <ActivityIndicator color={C.white} /> : <Text style={styles.primaryText}>{reference ? 'Resume Paystack checkout â†’' : 'Pay securely with Paystack â†’'}</Text>}
               </Pressable>
               {!!reference && <Pressable onPress={() => void verifyPayment(reference)} disabled={busy} style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed, busy && styles.disabled]}>{busy ? <ActivityIndicator color={C.burgundy} /> : <Text style={styles.secondaryText}>Verify payment</Text>}</Pressable>}
               <Text style={styles.secureNote}>ADADI never marks an order paid based only on the app. Paystack is verified by the server before your order is confirmed.</Text>
@@ -267,3 +267,4 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.75 },
   disabled: { opacity: 0.65 },
 });
+

@@ -1,3 +1,4 @@
+﻿import BackButton from '@/components/back-button';
 import { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Linking, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,7 +28,7 @@ type Order = {
 };
 type Tab = 'overview' | 'products' | 'orders' | 'profile';
 
-const money = (value: number) => '₦' + Math.round(Number(value) || 0).toLocaleString('en-NG');
+const money = (value: number) => 'â‚¦' + Math.round(Number(value) || 0).toLocaleString('en-NG');
 const slugify = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'product';
 
 function getConfig() {
@@ -247,34 +248,38 @@ export default function BusinessScreen() {
     catch { Alert.alert('Could not open ADADI', 'Visit ' + SITE + path + ' in your browser.'); }
   };
 
-  if (loading) return <SafeAreaView style={styles.safe} edges={['top']}><View style={styles.center}><ActivityIndicator size="large" color={C.burgundy} /><Text style={styles.muted}>Loading your business workspace…</Text></View></SafeAreaView>;
+  if (loading) return <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackButton /><View style={styles.center}><ActivityIndicator size="large" color={C.burgundy} /><Text style={styles.muted}>Loading your business workspaceâ€¦</Text></View></SafeAreaView>;
 
   if (!session) return (
-    <SafeAreaView style={styles.safe} edges={['top']}><ScrollView contentContainerStyle={styles.gate}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackButton /><ScrollView contentContainerStyle={styles.gate}>
       <Text style={styles.eyebrow}>ADADI FOR SELLERS</Text><Text style={styles.heroTitle}>Run your shop from your phone.</Text>
       <Text style={styles.body}>Sign in with the same ADADI account linked to your business to manage products and incoming orders.</Text>
       {!!error && <Text style={styles.error}>{error}</Text>}
-      <Pressable onPress={() => router.push('/account')} style={styles.primary}><Text style={styles.primaryText}>Sign in to ADADI →</Text></Pressable>
+      <Pressable onPress={() => router.push('/account')} style={styles.primary}><Text style={styles.primaryText}>Sign in to ADADI â†’</Text></Pressable>
       <Pressable onPress={() => void launchWebsite('/login')} style={styles.secondary}><Text style={styles.secondaryText}>Open ADADI website</Text></Pressable>
     </ScrollView></SafeAreaView>
   );
 
   if (!business) return (
-    <SafeAreaView style={styles.safe} edges={['top']}><ScrollView contentContainerStyle={styles.gate} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); void load(false); }} tintColor={C.burgundy} />}>
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackButton /><ScrollView contentContainerStyle={styles.gate} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); void load(false); }} tintColor={C.burgundy} />}>
       <Text style={styles.eyebrow}>SELL ON ADADI</Text><Text style={styles.heroTitle}>Your business starts here.</Text>
-      <Text style={styles.body}>You’re signed in, but this account doesn’t have a business linked to it yet. Register your business on ADADI’s website, then return here with the same account.</Text>
+      <Text style={styles.body}>Youâ€™re signed in, but this account doesnâ€™t have a business linked to it yet. Register your business on ADADIâ€™s website, then return here with the same account.</Text>
       {!!error && <Text style={styles.error}>{error}</Text>}
-      <Pressable onPress={() => void launchWebsite('/business/register')} style={styles.primary}><Text style={styles.primaryText}>Register a business →</Text></Pressable>
-      <Pressable onPress={() => void load()} style={styles.secondary}><Text style={styles.secondaryText}>I already registered — refresh</Text></Pressable>
+      <Pressable onPress={() => void launchWebsite('/business/register')} style={styles.primary}><Text style={styles.primaryText}>Register a business â†’</Text></Pressable>
+      <Pressable onPress={() => void load()} style={styles.secondary}><Text style={styles.secondaryText}>I already registered â€” refresh</Text></Pressable>
     </ScrollView></SafeAreaView>
   );
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackButton />
       <ScrollView contentContainerStyle={styles.content} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); void load(false); }} tintColor={C.burgundy} />} keyboardShouldPersistTaps="handled">
-        <View style={styles.headerRow}><View style={{ flex: 1 }}><Text style={styles.eyebrow}>SELLER WORKSPACE</Text><Text style={styles.title}>{business.name}</Text><Text style={styles.muted}>{business.category || 'Campus business'} · {business.status.replace('_', ' ')}</Text></View><View style={[styles.statusPill, business.is_open === false && styles.closedPill]}><Text style={[styles.statusText, business.is_open === false && styles.closedText]}>{business.is_open === false ? 'CLOSED' : 'OPEN'}</Text></View></View>
+        <View style={styles.headerRow}><View style={{ flex: 1 }}><Text style={styles.eyebrow}>SELLER WORKSPACE</Text><Text style={styles.title}>{business.name}</Text><Text style={styles.muted}>{business.category || 'Campus business'} Â· {business.status.replace('_', ' ')}</Text></View><View style={[styles.statusPill, business.is_open === false && styles.closedPill]}><Text style={[styles.statusText, business.is_open === false && styles.closedText]}>{business.is_open === false ? 'CLOSED' : 'OPEN'}</Text></View></View>
         {business.status !== 'approved' && <View style={styles.notice}><Text style={styles.noticeTitle}>Business approval: {business.status.replace('_', ' ')}</Text><Text style={styles.body}>Your listing is not approved yet. You can prepare your catalogue, but customers may not see it until ADADI approves the business.</Text></View>}
-        {!!error && <View style={styles.errorCard}><Text style={styles.error}>{error}</Text><Pressable onPress={() => void load()}><Text style={styles.link}>Retry loading →</Text></Pressable></View>}
+        {!!error && <View style={styles.errorCard}><Text style={styles.error}>{error}</Text><Pressable onPress={() => void load()}><Text style={styles.link}>Retry loading â†’</Text></Pressable></View>}
         <View style={styles.actionRow}>
           <Pressable onPress={() => void toggleOpen()} disabled={busy} style={[styles.secondary, styles.flexButton, busy && styles.disabled]}>{busy ? <ActivityIndicator color={C.burgundy} /> : <Text style={styles.secondaryText}>{business.is_open === false ? 'Open shop' : 'Close shop'}</Text>}</Pressable>
           <Pressable onPress={() => { setBusinessName(business.name); setCategory(business.category); setDescription(business.description ?? ''); setPhone(business.phone ?? ''); setAddress(business.address ?? ''); setProfileModal(true); }} style={[styles.primary, styles.flexButton]}><Text style={styles.primaryText}>Edit profile</Text></Pressable>
@@ -288,16 +293,16 @@ export default function BusinessScreen() {
             <View style={styles.statCard}><Text style={styles.statNumber}>{pendingOrders}</Text><Text style={styles.statLabel}>Open orders</Text></View>
           </View>
           <View style={styles.salesCard}><Text style={styles.salesLabel}>Paid orders total</Text><Text style={styles.salesValue}>{money(sales)}</Text><Text style={styles.salesHint}>Based on the latest 30 orders loaded.</Text></View>
-          <View style={styles.sectionHeader}><Text style={styles.sectionTitle}>Recent orders</Text><Pressable onPress={() => setTab('orders')}><Text style={styles.link}>View all →</Text></Pressable></View>
+          <View style={styles.sectionHeader}><Text style={styles.sectionTitle}>Recent orders</Text><Pressable onPress={() => setTab('orders')}><Text style={styles.link}>View all â†’</Text></Pressable></View>
           {orders.slice(0, 3).map(order => <OrderCard key={order.id} order={order} onStatus={next => void updateOrderStatus(order, next)} busy={busy} />)}
           {orders.length === 0 && <Empty title="No orders yet" body="New customer orders will appear here." />}
-          <View style={styles.sectionHeader}><Text style={styles.sectionTitle}>Your catalogue</Text><Pressable onPress={() => setTab('products')}><Text style={styles.link}>Manage →</Text></Pressable></View>
+          <View style={styles.sectionHeader}><Text style={styles.sectionTitle}>Your catalogue</Text><Pressable onPress={() => setTab('products')}><Text style={styles.link}>Manage â†’</Text></Pressable></View>
           {products.slice(0, 3).map(item => <ProductRow key={item.id} item={item} onEdit={() => openEditProduct(item)} onToggle={() => void toggleProduct(item)} onDelete={() => deleteProduct(item)} busy={busy} />)}
-          <Pressable onPress={openNewProduct} style={styles.primary}><Text style={styles.primaryText}>＋ Add a product</Text></Pressable>
+          <Pressable onPress={openNewProduct} style={styles.primary}><Text style={styles.primaryText}>ï¼‹ Add a product</Text></Pressable>
         </>}
 
         {tab === 'products' && <>
-          <View style={styles.sectionHeader}><View><Text style={styles.sectionTitle}>Products</Text><Text style={styles.muted}>{products.length} in your catalogue</Text></View><Pressable onPress={openNewProduct} style={styles.smallPrimary}><Text style={styles.smallPrimaryText}>＋ Add</Text></Pressable></View>
+          <View style={styles.sectionHeader}><View><Text style={styles.sectionTitle}>Products</Text><Text style={styles.muted}>{products.length} in your catalogue</Text></View><Pressable onPress={openNewProduct} style={styles.smallPrimary}><Text style={styles.smallPrimaryText}>ï¼‹ Add</Text></Pressable></View>
           {products.map(item => <ProductRow key={item.id} item={item} onEdit={() => openEditProduct(item)} onToggle={() => void toggleProduct(item)} onDelete={() => deleteProduct(item)} busy={busy} />)}
           {products.length === 0 && <Empty title="Your catalogue is empty" body="Add your first product so customers can discover it." />}
         </>}
@@ -311,17 +316,17 @@ export default function BusinessScreen() {
         {tab === 'profile' && <>
           <View style={styles.profileCard}><Text style={styles.sectionTitle}>Public business profile</Text><Text style={styles.body}>These details help customers identify and contact your business.</Text>
             <ProfileLine label="Business name" value={business.name} /><ProfileLine label="Category" value={business.category} /><ProfileLine label="Phone" value={business.phone || 'Not added'} /><ProfileLine label="Address" value={business.address || 'Not added'} /><ProfileLine label="Description" value={business.description || 'Not added'} />
-            <Pressable onPress={() => void launchWebsite('/business/dashboard')} style={styles.secondary}><Text style={styles.secondaryText}>More business settings on website ↗</Text></Pressable>
+            <Pressable onPress={() => void launchWebsite('/business/dashboard')} style={styles.secondary}><Text style={styles.secondaryText}>More business settings on website â†—</Text></Pressable>
           </View>
         </>}
       </ScrollView>
 
       <Modal visible={productModal} transparent animationType="slide" onRequestClose={() => setProductModal(false)} statusBarTranslucent>
         <View style={styles.modalRoot}><Pressable style={styles.backdrop} onPress={() => setProductModal(false)} /><View style={styles.sheet}>
-          <View style={styles.sheetTop}><View><Text style={styles.sheetTitle}>{editingProduct ? 'Edit product' : 'Add a product'}</Text><Text style={styles.muted}>Keep details accurate for customers.</Text></View><Pressable onPress={() => setProductModal(false)}><Text style={styles.close}>×</Text></Pressable></View>
+          <View style={styles.sheetTop}><View><Text style={styles.sheetTitle}>{editingProduct ? 'Edit product' : 'Add a product'}</Text><Text style={styles.muted}>Keep details accurate for customers.</Text></View><Pressable onPress={() => setProductModal(false)}><Text style={styles.close}>Ã—</Text></Pressable></View>
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 12, paddingBottom: 8 }}>
             <Field label="PRODUCT NAME" value={productName} onChangeText={setProductName} placeholder="e.g. Campus meal pack" />
-            <Field label="PRICE (₦)" value={productPrice} onChangeText={setProductPrice} placeholder="e.g. 1500" keyboardType="decimal-pad" />
+            <Field label="PRICE (â‚¦)" value={productPrice} onChangeText={setProductPrice} placeholder="e.g. 1500" keyboardType="decimal-pad" />
             <Field label="DESCRIPTION" value={productDescription} onChangeText={setProductDescription} placeholder="Describe this product" multiline />
             <Field label="IMAGE URL (OPTIONAL)" value={productImage} onChangeText={setProductImage} placeholder="https://..." keyboardType="url" />
             <Text style={styles.hint}>For now, use an existing public image URL. Image upload from the phone can be added after storage permissions are verified.</Text>
@@ -332,7 +337,7 @@ export default function BusinessScreen() {
 
       <Modal visible={profileModal} transparent animationType="slide" onRequestClose={() => setProfileModal(false)} statusBarTranslucent>
         <View style={styles.modalRoot}><Pressable style={styles.backdrop} onPress={() => setProfileModal(false)} /><View style={styles.sheet}>
-          <View style={styles.sheetTop}><View><Text style={styles.sheetTitle}>Edit business profile</Text><Text style={styles.muted}>Changes appear on your public listing.</Text></View><Pressable onPress={() => setProfileModal(false)}><Text style={styles.close}>×</Text></Pressable></View>
+          <View style={styles.sheetTop}><View><Text style={styles.sheetTitle}>Edit business profile</Text><Text style={styles.muted}>Changes appear on your public listing.</Text></View><Pressable onPress={() => setProfileModal(false)}><Text style={styles.close}>Ã—</Text></Pressable></View>
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 12, paddingBottom: 8 }}>
             <Field label="BUSINESS NAME" value={businessName} onChangeText={setBusinessName} placeholder="Business name" />
             <Field label="CATEGORY" value={category} onChangeText={setCategory} placeholder="e.g. Food & drinks" />
@@ -366,9 +371,9 @@ function OrderCard({ order, onStatus, busy }: { order: Order; onStatus: (status:
   const nextStatus = STATUSES.filter(item => item !== current && (item !== 'confirmed' && item !== 'preparing' && item !== 'ready' && item !== 'completed' || paid));
   return <View style={styles.orderCard}>
     <View style={styles.orderTop}><View style={{ flex: 1 }}><Text style={styles.rowTitle}>Order {order.order_number || order.id.slice(0, 8)}</Text><Text style={styles.muted}>{new Date(order.created_at).toLocaleDateString()}</Text></View><Text style={styles.rowPrice}>{money(amount)}</Text></View>
-    <Text style={styles.orderCustomer}>{order.customer_name || 'Customer'}{order.customer_phone ? ' · ' + order.customer_phone : ''}</Text>
-    <Text style={styles.muted}>{order.delivery_method || 'Pickup'}{order.delivery_address ? ' · ' + order.delivery_address : ''}</Text>
-    {!!order.order_items?.length && <Text style={styles.itemSummary}>{order.order_items.map(item => item.quantity + '× ' + item.product_name).join(' · ')}</Text>}
+    <Text style={styles.orderCustomer}>{order.customer_name || 'Customer'}{order.customer_phone ? ' Â· ' + order.customer_phone : ''}</Text>
+    <Text style={styles.muted}>{order.delivery_method || 'Pickup'}{order.delivery_address ? ' Â· ' + order.delivery_address : ''}</Text>
+    {!!order.order_items?.length && <Text style={styles.itemSummary}>{order.order_items.map(item => item.quantity + 'Ã— ' + item.product_name).join(' Â· ')}</Text>}
     <View style={styles.orderBadges}><Text style={styles.badge}>Order: {current}</Text><Text style={[styles.badge, paid ? styles.paidBadge : styles.unpaidBadge]}>Payment: {order.payment_status || 'pending'}</Text></View>
     <Text style={styles.fieldLabel}>UPDATE ORDER STATUS</Text>
     <View style={styles.statusOptions}>{nextStatus.map(status => <Pressable key={status} disabled={busy} onPress={() => onStatus(status)} style={styles.statusOption}><Text style={styles.statusOptionText}>{status}</Text></Pressable>)}</View>
@@ -460,4 +465,5 @@ const styles = StyleSheet.create({
   close: { color: C.ink, fontSize: 27, lineHeight: 29, paddingHorizontal: 4 },
   pressed: { opacity: 0.75 },
 });
+
 

@@ -1,3 +1,4 @@
+﻿import BackButton from '@/components/back-button';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,6 +28,7 @@ export default function HelpScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackButton />
       <View style={styles.header}>
         <View style={styles.brandMark}><Text style={styles.brandMarkText}>A</Text></View>
         <View style={styles.headingCopy}>
@@ -62,12 +64,12 @@ export default function HelpScreen() {
         {loading && (
           <View style={styles.loadingOverlay}>
             <ActivityIndicator size="large" color={C.burgundy} />
-            <Text style={styles.loadingText}>Opening ADADI support…</Text>
+            <Text style={styles.loadingText}>Opening ADADI supportâ€¦</Text>
           </View>
         )}
         {failed && (
           <View style={styles.errorOverlay}>
-            <Text style={styles.errorTitle}>Chat couldn’t load</Text>
+            <Text style={styles.errorTitle}>Chat couldnâ€™t load</Text>
             <Text style={styles.errorBody}>Check your internet connection and try again.</Text>
             <Pressable onPress={retry} style={({ pressed }) => [styles.retryButton, pressed && styles.pressed]} accessibilityRole="button">
               <Text style={styles.retryText}>Try again</Text>
@@ -75,7 +77,7 @@ export default function HelpScreen() {
           </View>
         )}
       </View>
-      <Text style={styles.privacyNote}>For your safety, don’t share passwords, card details, or other sensitive information in chat.</Text>
+      <Text style={styles.privacyNote}>For your safety, donâ€™t share passwords, card details, or other sensitive information in chat.</Text>
     </SafeAreaView>
   );
 }

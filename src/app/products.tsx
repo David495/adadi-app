@@ -1,6 +1,11 @@
+<<<<<<< Updated upstream
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
+=======
+﻿import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Alert, Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+>>>>>>> Stashed changes
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { fetchProducts, isSupabaseConfigured, Product } from '@/lib/supabase-rest';
@@ -20,7 +25,7 @@ const colors = [
   { name: 'Yellow', hex: '#E8C547' },
 ];
 
-const money = (value: number) => '₦' + Math.round(value).toLocaleString('en-NG');
+const money = (value: number) => 'â‚¦' + Math.round(value).toLocaleString('en-NG');
 
 function businessName(product: Product) {
   const value = product.business;
@@ -111,7 +116,7 @@ export default function ProductsScreen() {
     const min = minDraft.trim() ? Number(minDraft.replace(/,/g, '')) : undefined;
     const max = maxDraft.trim() ? Number(maxDraft.replace(/,/g, '')) : undefined;
     if ((min !== undefined && (!Number.isFinite(min) || min < 0)) || (max !== undefined && (!Number.isFinite(max) || max < 0))) {
-      setFilterError('Enter a valid price of ₦0 or more.');
+      setFilterError('Enter a valid price of â‚¦0 or more.');
       return;
     }
     if (min !== undefined && max !== undefined && min > max) {
@@ -144,25 +149,25 @@ export default function ProductsScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        <Pressable onPress={() => router.back()} style={styles.back}><Text style={styles.backText}>‹  Back</Text></Pressable>
+        <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} style={styles.back}><Text style={styles.backText}>â€¹  Back</Text></Pressable>
         <Text style={styles.kicker}>SHOP THE CAMPUS</Text>
         <Text style={styles.title}>Browse products</Text>
         <Text style={styles.subtitle}>Discover what DUFUHS businesses have available.</Text>
 
         <View style={styles.searchWrap}>
-          <Text style={styles.searchGlyph}>⌕</Text>
+          <Text style={styles.searchGlyph}>âŒ•</Text>
           <TextInput value={searchDraft} onChangeText={value => { setSearchDraft(value); setSearch(value); }} placeholder="Search products..." placeholderTextColor="#93848A" returnKeyType="search" style={styles.searchInput} accessibilityLabel="Search products" />
-          {searchDraft.length > 0 && <Pressable onPress={() => { setSearchDraft(''); setSearch(''); }} accessibilityRole="button" accessibilityLabel="Clear search"><Text style={styles.clear}>×</Text></Pressable>}
+          {searchDraft.length > 0 && <Pressable onPress={() => { setSearchDraft(''); setSearch(''); }} accessibilityRole="button" accessibilityLabel="Clear search"><Text style={styles.clear}>Ã—</Text></Pressable>}
         </View>
 
         <View style={styles.toolbar}>
           <Pressable onPress={openFilters} style={({ pressed }) => [styles.toolbarButton, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Open product filters">
-            <Text style={styles.toolbarGlyph}>☷</Text>
+            <Text style={styles.toolbarGlyph}>â˜·</Text>
             <Text style={styles.toolbarText}>Filter</Text>
             {activeFilterCount > 0 && <View style={styles.filterBadge}><Text style={styles.filterBadgeText}>{activeFilterCount}</Text></View>}
           </Pressable>
           <Pressable onPress={() => setSortOrder(current => current === 'default' ? 'low' : current === 'low' ? 'high' : 'default')} style={({ pressed }) => [styles.toolbarButton, pressed && styles.pressed]} accessibilityRole="button" accessibilityLabel="Sort products by price">
-            <Text style={styles.toolbarGlyph}>↕</Text>
+            <Text style={styles.toolbarGlyph}>â†•</Text>
             <Text style={styles.toolbarText}>{sortOrder === 'low' ? 'Price: low first' : sortOrder === 'high' ? 'Price: high first' : 'Sort'}</Text>
           </Pressable>
         </View>
@@ -181,16 +186,20 @@ export default function ProductsScreen() {
         {!isSupabaseConfigured() ? (
           <View style={styles.stateCard}><Text style={styles.stateTitle}>Connect ADADI data</Text><Text style={styles.stateBody}>Add your Supabase URL and publishable key to .env, then restart Expo.</Text></View>
         ) : loading ? (
-          <View style={styles.stateCard}><ActivityIndicator size="large" color={C.burgundy} /><Text style={styles.stateBody}>Finding products…</Text></View>
+          <View style={styles.stateCard}><ActivityIndicator size="large" color={C.burgundy} /><Text style={styles.stateBody}>Finding productsâ€¦</Text></View>
         ) : error ? (
-          <View style={styles.stateCard}><Text style={styles.stateTitle}>Couldn’t load products</Text><Text style={styles.stateBody}>{error}</Text><Pressable onPress={() => { setRefreshing(true); void loadProducts(); }} disabled={refreshing} style={[styles.retryButton, refreshing && styles.disabled]}>{refreshing ? <ActivityIndicator color={C.white} /> : <Text style={styles.retryText}>Try again</Text>}</Pressable></View>
+          <View style={styles.stateCard}><Text style={styles.stateTitle}>Couldnâ€™t load products</Text><Text style={styles.stateBody}>{error}</Text><Pressable onPress={() => { setRefreshing(true); void loadProducts(); }} disabled={refreshing} style={[styles.retryButton, refreshing && styles.disabled]}>{refreshing ? <ActivityIndicator color={C.white} /> : <Text style={styles.retryText}>Try again</Text>}</Pressable></View>
         ) : visibleProducts.length === 0 ? (
-          <View style={styles.stateCard}><Text style={styles.stateTitle}>No matching products</Text><Text style={styles.stateBody}>Try a different product name or adjust your filters. You can also search campus businesses.</Text><Pressable onPress={clearFilters} style={styles.clearButton} accessibilityRole="button"><Text style={styles.clearButtonText}>Clear filters</Text></Pressable><Pressable onPress={() => router.push({ pathname: '/explore', params: searchDraft.trim() ? { q: searchDraft.trim() } : {} })} style={styles.clearButton} accessibilityRole="button"><Text style={styles.clearButtonText}>Search businesses instead ↗</Text></Pressable></View>
+          <View style={styles.stateCard}><Text style={styles.stateTitle}>No matching products</Text><Text style={styles.stateBody}>Try a different product name or adjust your filters. You can also search campus businesses.</Text><Pressable onPress={clearFilters} style={styles.clearButton} accessibilityRole="button"><Text style={styles.clearButtonText}>Clear filters</Text></Pressable><Pressable onPress={() => router.push({ pathname: '/explore', params: searchDraft.trim() ? { q: searchDraft.trim() } : {} })} style={styles.clearButton} accessibilityRole="button"><Text style={styles.clearButtonText}>Search businesses instead â†—</Text></Pressable></View>
         ) : (
           <View style={styles.productGrid}>
             {visibleProducts.map(product => (
               <View key={product.id} style={styles.productCard}>
+<<<<<<< Updated upstream
                 {product.image_url ? <Image source={{ uri: product.image_url }} style={styles.productImage} contentFit="cover" cachePolicy="disk" transition={120} /> : <View style={styles.productImageFallback}><Text style={styles.fallbackEmoji}>🛍️</Text></View>}
+=======
+                {product.image_url ? <Image source={{ uri: product.image_url }} style={styles.productImage} resizeMode="cover" /> : <View style={styles.productImageFallback}><Text style={styles.fallbackEmoji}>ðŸ›ï¸</Text></View>}
+>>>>>>> Stashed changes
                 <View style={styles.productInfo}>
                   <Text style={styles.productName} numberOfLines={2}>{product.name}</Text>
                   <Text style={styles.productPrice}>{money(Number(product.price) || 0)}</Text>
@@ -199,7 +208,7 @@ export default function ProductsScreen() {
                     onPress={async () => {
                       const business = Array.isArray(product.business) ? product.business[0] : product.business;
                       if (!business?.id) {
-                        Alert.alert('Can’t add this product', 'The business information is missing. Please refresh and try again.');
+                        Alert.alert('Canâ€™t add this product', 'The business information is missing. Please refresh and try again.');
                         return;
                       }
                       try {
@@ -217,7 +226,7 @@ export default function ProductsScreen() {
                         }
                         Alert.alert('Added to cart', product.name + ' is in your cart.');
                       } catch {
-                        Alert.alert('Couldn’t update cart', 'Please try again.');
+                        Alert.alert('Couldnâ€™t update cart', 'Please try again.');
                       }
                     }}
                     style={({ pressed }) => [styles.addToCartButton, pressed && styles.pressed]}
@@ -240,21 +249,21 @@ export default function ProductsScreen() {
             <View style={styles.sheetHandle} />
             <View style={styles.sheetHeader}>
               <View><Text style={styles.sheetTitle}>Filter products</Text><Text style={styles.sheetSubtitle}>Choose a price range and color</Text></View>
-              <Pressable onPress={() => setFilterOpen(false)} style={styles.closeButton} accessibilityRole="button" accessibilityLabel="Close filters"><Text style={styles.closeButtonText}>×</Text></Pressable>
+              <Pressable onPress={() => setFilterOpen(false)} style={styles.closeButton} accessibilityRole="button" accessibilityLabel="Close filters"><Text style={styles.closeButtonText}>Ã—</Text></Pressable>
             </View>
             <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.sheetScroll}>
               <View style={styles.filterSection}>
-                <View style={styles.filterHeadingRow}><Text style={styles.filterTitle}>Price range</Text><Text style={styles.filterHint}>In naira (₦)</Text></View>
+                <View style={styles.filterHeadingRow}><Text style={styles.filterTitle}>Price range</Text><Text style={styles.filterHint}>In naira (â‚¦)</Text></View>
                 <View style={styles.priceInputs}>
-                  <View style={styles.priceField}><Text style={styles.fieldLabel}>MINIMUM</Text><TextInput value={minDraft} onChangeText={value => { setMinDraft(value); setFilterError(''); }} placeholder="₦0" placeholderTextColor="#A99BA0" keyboardType="numeric" style={styles.priceInput} accessibilityLabel="Minimum price" /></View>
-                  <Text style={styles.priceDash}>—</Text>
+                  <View style={styles.priceField}><Text style={styles.fieldLabel}>MINIMUM</Text><TextInput value={minDraft} onChangeText={value => { setMinDraft(value); setFilterError(''); }} placeholder="â‚¦0" placeholderTextColor="#A99BA0" keyboardType="numeric" style={styles.priceInput} accessibilityLabel="Minimum price" /></View>
+                  <Text style={styles.priceDash}>â€”</Text>
                   <View style={styles.priceField}><Text style={styles.fieldLabel}>MAXIMUM</Text><TextInput value={maxDraft} onChangeText={value => { setMaxDraft(value); setFilterError(''); }} placeholder="No limit" placeholderTextColor="#A99BA0" keyboardType="numeric" style={styles.priceInput} accessibilityLabel="Maximum price" /></View>
                 </View>
                 <View style={styles.priceChips}>
                   {[
-                    { label: 'Under ₦1k', min: undefined, max: 999 },
-                    { label: '₦1k–₦2k', min: 1000, max: 2000 },
-                    { label: 'Over ₦2k', min: 2001, max: undefined },
+                    { label: 'Under â‚¦1k', min: undefined, max: 999 },
+                    { label: 'â‚¦1kâ€“â‚¦2k', min: 1000, max: 2000 },
+                    { label: 'Over â‚¦2k', min: 2001, max: undefined },
                   ].map(preset => {
                     const active = minDraft === (preset.min === undefined ? '' : String(preset.min)) && maxDraft === (preset.max === undefined ? '' : String(preset.max));
                     return <Pressable key={preset.label} onPress={() => choosePricePreset(preset.min, preset.max)} style={[styles.priceChip, active && styles.priceChipActive]} accessibilityRole="button" accessibilityState={{ selected: active }}><Text style={[styles.priceChipText, active && styles.priceChipTextActive]}>{preset.label}</Text></Pressable>;
@@ -268,7 +277,7 @@ export default function ProductsScreen() {
                   {colors.map(color => {
                     const active = draftColors.includes(color.name);
                     return <Pressable key={color.name} onPress={() => toggleDraftColor(color.name)} style={styles.colorOption} accessibilityRole="button" accessibilityLabel={color.name} accessibilityState={{ selected: active }}>
-                      <View style={[styles.swatch, { backgroundColor: color.hex }, color.name === 'White' && styles.whiteSwatch, active && styles.swatchActive]}>{active && <Text style={[styles.swatchCheck, (color.name === 'White' || color.name === 'Yellow' || color.name === 'Beige') && styles.darkCheck]}>✓</Text>}</View>
+                      <View style={[styles.swatch, { backgroundColor: color.hex }, color.name === 'White' && styles.whiteSwatch, active && styles.swatchActive]}>{active && <Text style={[styles.swatchCheck, (color.name === 'White' || color.name === 'Yellow' || color.name === 'Beige') && styles.darkCheck]}>âœ“</Text>}</View>
                       <Text style={[styles.colorLabel, active && styles.colorLabelActive]}>{color.name}</Text>
                     </Pressable>;
                   })}

@@ -1,3 +1,4 @@
+﻿import BackButton from '@/components/back-button';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
@@ -18,15 +19,16 @@ export default function HelpScreen() {
 
   return (
     <SafeAreaView style={styles.safe}>
+      <BackButton />
       <View style={styles.content}>
         <View style={styles.brandMark}><Text style={styles.brandMarkText}>A</Text></View>
         <Text style={styles.kicker}>ADADI SUPPORT</Text>
         <Text style={styles.title}>How can we help?</Text>
-        <Text style={styles.body}>Chat with ADADI’s AI assistant for help with shopping, businesses, and using the marketplace.</Text>
+        <Text style={styles.body}>Chat with ADADIâ€™s AI assistant for help with shopping, businesses, and using the marketplace.</Text>
         <Pressable onPress={openChat} disabled={opening} style={({ pressed }) => [styles.button, (pressed || opening) && styles.pressed]} accessibilityRole="button">
           {opening ? <ActivityIndicator color={C.white} /> : <Text style={styles.buttonText}>Open ADADI chat</Text>}
         </Pressable>
-        <Text style={styles.note}>For your safety, don’t share passwords, card details, or other sensitive information in chat.</Text>
+        <Text style={styles.note}>For your safety, donâ€™t share passwords, card details, or other sensitive information in chat.</Text>
       </View>
     </SafeAreaView>
   );

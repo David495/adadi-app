@@ -1,3 +1,4 @@
+﻿import BackButton from '@/components/back-button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -8,7 +9,7 @@ const STORAGE_KEY = '@adadi/expenses/v1';
 const categories = ['Food', 'Transport', 'School', 'Personal', 'Other'] as const;
 type ExpenseCategory = typeof categories[number];
 type Expense = { id: string; title: string; amount: number; category: ExpenseCategory; date: string };
-const money = (value: number) => '₦' + value.toLocaleString('en-NG', { maximumFractionDigits: 2 });
+const money = (value: number) => 'â‚¦' + value.toLocaleString('en-NG', { maximumFractionDigits: 2 });
 const localDate = () => {
   const now = new Date();
   return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
@@ -79,7 +80,7 @@ export default function ExpensesScreen() {
     const cleanTitle = title.trim();
     const parsedAmount = Number(amount.replace(/,/g, '').trim());
     if (!cleanTitle) { setError('Enter what you spent money on.'); return; }
-    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) { setError('Enter an amount greater than ₦0.'); return; }
+    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) { setError('Enter an amount greater than â‚¦0.'); return; }
     const item: Expense = {
       id: Date.now().toString() + '-' + Math.random().toString(36).slice(2, 8),
       title: cleanTitle.slice(0, 80),
@@ -100,6 +101,7 @@ export default function ExpensesScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackButton />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <Text style={styles.kicker}>YOUR MONEY, IN ONE PLACE</Text>
         <Text style={styles.title}>Expense tracker</Text>
@@ -120,7 +122,7 @@ export default function ExpensesScreen() {
           <Text style={styles.cardTitle}>Add an expense</Text>
           <Text style={styles.fieldLabel}>What did you spend on?</Text>
           <TextInput value={title} onChangeText={setTitle} placeholder="e.g. Lunch, printing, transport" placeholderTextColor="#93848A" style={styles.input} maxLength={80} returnKeyType="next" />
-          <Text style={styles.fieldLabel}>Amount (₦)</Text>
+          <Text style={styles.fieldLabel}>Amount (â‚¦)</Text>
           <TextInput value={amount} onChangeText={value => setAmount(value.replace(/[^0-9.,]/g, ''))} placeholder="e.g. 1500" placeholderTextColor="#93848A" style={styles.input} keyboardType="decimal-pad" returnKeyType="done" />
           <Text style={styles.fieldLabel}>Category</Text>
           <View style={styles.categoryRow}>
@@ -144,17 +146,17 @@ export default function ExpensesScreen() {
           {!loading && <Text style={styles.count}>{expenses.length} entries</Text>}
         </View>
         {loading ? (
-          <View style={styles.emptyCard}><ActivityIndicator color={C.burgundy} /><Text style={styles.emptyText}>Loading your expenses…</Text></View>
+          <View style={styles.emptyCard}><ActivityIndicator color={C.burgundy} /><Text style={styles.emptyText}>Loading your expensesâ€¦</Text></View>
         ) : expenses.length === 0 ? (
-          <View style={styles.emptyCard}><Text style={styles.emptyEmoji}>🧾</Text><Text style={styles.emptyTitle}>Nothing recorded yet</Text><Text style={styles.emptyText}>Add your first expense above and your totals will update automatically.</Text></View>
+          <View style={styles.emptyCard}><Text style={styles.emptyEmoji}>ðŸ§¾</Text><Text style={styles.emptyTitle}>Nothing recorded yet</Text><Text style={styles.emptyText}>Add your first expense above and your totals will update automatically.</Text></View>
         ) : (
           <View style={styles.expenseList}>
             {expenses.map(item => (
               <View key={item.id} style={styles.expenseItem}>
-                <View style={styles.expenseIcon}><Text style={styles.expenseIconText}>{item.category === 'Food' ? '🍲' : item.category === 'Transport' ? '🚌' : item.category === 'School' ? '📚' : item.category === 'Personal' ? '🧴' : '🧾'}</Text></View>
+                <View style={styles.expenseIcon}><Text style={styles.expenseIconText}>{item.category === 'Food' ? 'ðŸ²' : item.category === 'Transport' ? 'ðŸšŒ' : item.category === 'School' ? 'ðŸ“š' : item.category === 'Personal' ? 'ðŸ§´' : 'ðŸ§¾'}</Text></View>
                 <View style={styles.expenseCopy}>
                   <Text style={styles.expenseTitle} numberOfLines={1}>{item.title}</Text>
-                  <Text style={styles.expenseMeta}>{item.category} · {item.date}</Text>
+                  <Text style={styles.expenseMeta}>{item.category} Â· {item.date}</Text>
                 </View>
                 <View style={styles.expenseRight}>
                   <Text style={styles.expenseAmount}>{money(item.amount)}</Text>
@@ -215,3 +217,4 @@ const styles = StyleSheet.create({
   expenseAmount: { color: C.burgundy, fontSize: 12, fontWeight: '900' },
   deleteText: { color: '#9A3B48', fontSize: 10, fontWeight: '800' },
 });
+

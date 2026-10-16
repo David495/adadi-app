@@ -1,3 +1,4 @@
+﻿import BackButton from '@/components/back-button';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -59,13 +60,14 @@ export default function AccountScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <BackButton />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text style={styles.kicker}>YOUR ADADI</Text>
         <Text style={styles.title}>Account</Text>
         <Text style={styles.subtitle}>Sign in to place orders and pay securely through Paystack.</Text>
 
         {loadingSession ? (
-          <View style={styles.loadingCard}><ActivityIndicator color={C.burgundy} /><Text style={styles.body}>Checking your session…</Text></View>
+          <View style={styles.loadingCard}><ActivityIndicator color={C.burgundy} /><Text style={styles.body}>Checking your sessionâ€¦</Text></View>
         ) : session ? (
           <>
             <View style={styles.profileCard}>
@@ -77,7 +79,7 @@ export default function AccountScreen() {
               </View>
             </View>
             <Pressable onPress={() => router.push('/cart')} style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]} accessibilityRole="button">
-              <Text style={styles.primaryText}>Go to cart and checkout →</Text>
+              <Text style={styles.primaryText}>Go to cart and checkout â†’</Text>
             </Pressable>
             <Pressable onPress={logout} disabled={busy} style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed, busy && styles.disabled]} accessibilityRole="button">
               {busy ? <ActivityIndicator color={C.burgundy} /> : <Text style={styles.secondaryText}>Sign out</Text>}
@@ -96,14 +98,14 @@ export default function AccountScreen() {
             <Pressable onPress={() => void submit()} disabled={busy} style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed, busy && styles.disabled]} accessibilityRole="button">
               {busy ? <ActivityIndicator color={C.white} /> : <Text style={styles.primaryText}>{mode === 'signin' ? 'Sign in securely' : 'Create account'}</Text>}
             </Pressable>
-            <Text style={styles.privacyNote}>Your sign-in uses ADADI’s existing Supabase authentication. Payment credentials stay on the server.</Text>
+            <Text style={styles.privacyNote}>Your sign-in uses ADADIâ€™s existing Supabase authentication. Payment credentials stay on the server.</Text>
           </View>
         )}
 
         <View style={styles.businessCard}>
           <Text style={styles.businessTitle}>Business owner?</Text>
           <Text style={styles.body}>Manage your business profile, products and incoming orders directly from the app.</Text>
-          <Text onPress={() => router.push('/business')} style={styles.link}>Open business workspace →</Text>
+          <Text onPress={() => router.push('/business')} style={styles.link}>Open business workspace â†’</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -144,3 +146,4 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.75 },
   disabled: { opacity: 0.65 },
 });
+
