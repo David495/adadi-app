@@ -1,3 +1,4 @@
+import BackButton from '@/components/back-button';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Image } from 'expo-image';
@@ -144,7 +145,7 @@ export default function ProductsScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} style={styles.back}><Text style={styles.backText}>â€¹  Back</Text></Pressable>
+        <BackButton fallback="/" />
         <Text style={styles.kicker}>SHOP THE CAMPUS</Text>
         <Text style={styles.title}>Browse products</Text>
         <Text style={styles.subtitle}>Discover what DUFUHS businesses have available.</Text>
