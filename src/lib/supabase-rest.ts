@@ -59,6 +59,8 @@ export async function fetchBusinesses(options: {
     const categorySearch: Record<string, string> = {
       Fashion: 'fashion',
       Beauty: 'beauty',
+      'Barbers & beauty': 'beauty',
+      Accommodation: 'accommodation',
       'Food & drinks': 'restaurant',
       Electronics: 'electronics',
       Services: 'service',
@@ -90,4 +92,74 @@ export async function fetchBusinesses(options: {
   }
 
   return data as Business[];
+}
+
+
+export type Product = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  price: number;
+  image_url: string | null;
+  is_available: boolean | null;
+  business: { id: string; name: string; status: string } | { id: string; name: string; status: string }[] | null;
+};
+
+export async function fetchProducts(options: {
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  limit?: number;
+  signal?: AbortSignal;
+} = {}): Promise<Product[]> {
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    throw new SupabaseRequestError(
+      'Supabase is not configured. Add the EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY values to your .env file.'
+    );
+  }
+
+  const limit = Math.min(Math.max(options.limit ?? 24, 1), 30);
+  const params = new URLSearchParams({
+    select: 'id,name,slug,description,price,image_url,is_available,business:businesses!inner(id,name,status)',
+    'business.status': 'eq.approved',
+    is_available: 'eq.true',
+    order: 'created_at.desc',
+    limit: String(limit),
+  });
+
+  const search = options.search?.trim().replace(/[,%()]/g, ' ').replace(/\s+/g, ' ');
+  if (search) {
+    const safeSearch = search.slice(0, 80);
+    params.set('or', '(name.ilike.*' + safeSearch + '*,description.ilike.*' + safeSearch + '*)');
+  }
+  if (Number.isFinite(options.minPrice) && options.minPrice !== undefined && options.minPrice >= 0) {
+    params.set('price', 'gte.' + String(options.minPrice));
+  }
+  if (Number.isFinite(options.maxPrice) && options.maxPrice !== undefined && options.maxPrice >= 0) {
+    params.append('price', 'lte.' + String(options.maxPrice));
+  }
+
+  const response = await fetch(SUPABASE_URL + '/rest/v1/products?' + params.toString(), {
+    method: 'GET',
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: 'Bearer ' + SUPABASE_KEY,
+      Accept: 'application/json',
+    },
+    signal: options.signal,
+  });
+
+  if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      throw new SupabaseRequestError('Supabase rejected the public product request. Check the publishable key and product read policies.');
+    }
+    throw new SupabaseRequestError('Could not load products (HTTP ' + response.status + '). Please try again.');
+  }
+
+  const data: unknown = await response.json();
+  if (!Array.isArray(data)) {
+    throw new SupabaseRequestError('The product list response was unexpected.');
+  }
+  return data as Product[];
 }

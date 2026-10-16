@@ -1,6 +1,8 @@
-import { useLocalSearchParams, router } from 'expo-router';
+import BackButton from '@/components/back-button';
+﻿import { useLocalSearchParams, router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Business, fetchBusinesses, isSupabaseConfigured } from '@/lib/supabase-rest';
 
@@ -58,13 +60,14 @@ export default function ExploreScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        <Pressable onPress={() => router.back()} style={styles.back}><Text style={styles.backText}>‹  Back</Text></Pressable>
+        <BackButton fallback="/" />
         <Text style={styles.kicker}>THE CAMPUS DIRECTORY</Text>
         <Text style={styles.title}>Explore ADADI</Text>
         <Text style={styles.subtitle}>Find a business, service or product around the DUFUHS community.</Text>
+        <Pressable onPress={() => router.push('/products')} style={styles.productsLink} accessibilityRole="button"><Text style={styles.productsLinkText}>Browse products by price and color â†—</Text></Pressable>
 
         <View style={styles.searchWrap}>
-          <Text style={styles.searchGlyph}>⌕</Text>
+          <Text style={styles.searchGlyph}>âŒ•</Text>
           <TextInput
             value={search}
             onChangeText={setSearch}
@@ -74,7 +77,7 @@ export default function ExploreScreen() {
             style={styles.searchInput}
             accessibilityLabel="Search businesses"
           />
-          {search.length > 0 && <Pressable onPress={() => setSearch('')} accessibilityRole="button" accessibilityLabel="Clear search"><Text style={styles.clear}>×</Text></Pressable>}
+          {search.length > 0 && <Pressable onPress={() => setSearch('')} accessibilityRole="button" accessibilityLabel="Clear search"><Text style={styles.clear}>Ã—</Text></Pressable>}
         </View>
 
         <Text style={styles.sectionLabel}>CATEGORIES</Text>
@@ -97,10 +100,10 @@ export default function ExploreScreen() {
             <Text style={styles.stateBody}>Add your Supabase URL and publishable key to a local .env file using .env.example as the guide, then restart Expo.</Text>
           </View>
         ) : loading ? (
-          <View style={styles.stateCard}><ActivityIndicator size="large" color={C.burgundy} /><Text style={styles.stateBody}>Loading campus businesses…</Text></View>
+          <View style={styles.stateCard}><ActivityIndicator size="large" color={C.burgundy} /><Text style={styles.stateBody}>Loading campus businessesâ€¦</Text></View>
         ) : error ? (
           <View style={styles.stateCard}>
-            <Text style={styles.stateTitle}>Couldn’t load businesses</Text>
+            <Text style={styles.stateTitle}>Couldnâ€™t load businesses</Text>
             <Text style={styles.stateBody}>{error}</Text>
             <Pressable onPress={retry} disabled={refreshing} style={({ pressed }) => [styles.retryButton, pressed && styles.pressed, refreshing && styles.disabled]}>
               {refreshing ? <ActivityIndicator color={C.white} /> : <Text style={styles.retryText}>Try again</Text>}
@@ -117,7 +120,7 @@ export default function ExploreScreen() {
             {businesses.map(business => (
               <View key={business.id} style={styles.businessCard}>
                 {business.logo_url ? (
-                  <Image source={{ uri: business.logo_url }} style={styles.businessImage} resizeMode="cover" />
+                  <Image source={{ uri: business.logo_url }} style={styles.businessImage} contentFit="cover" cachePolicy="disk" transition={120} />
                 ) : (
                   <View style={styles.imageFallback}><Text style={styles.imageFallbackText}>{business.name.trim().slice(0, 1).toUpperCase()}</Text></View>
                 )}
@@ -128,14 +131,14 @@ export default function ExploreScreen() {
                   </View>
                   <Text style={styles.businessCategory} numberOfLines={1}>{business.category || 'Campus business'}</Text>
                   {!!business.description && <Text style={styles.businessDescription} numberOfLines={2}>{business.description}</Text>}
-                  {!!business.address && <Text style={styles.businessAddress} numberOfLines={1}>⌖ {business.address}</Text>}
+                  {!!business.address && <Text style={styles.businessAddress} numberOfLines={1}>âŒ– {business.address}</Text>}
                 </View>
               </View>
             ))}
             <Text style={styles.paginationNote}>Showing up to 20 businesses per request to help save mobile data.</Text>
           </View>
         )}
-        <View style={styles.tip}><Text style={styles.tipIcon}>◉</Text><Text style={styles.tipText}>Images are only loaded for businesses in this result list. Listings are limited to approved businesses.</Text></View>
+        <View style={styles.tip}><Text style={styles.tipIcon}>â—‰</Text><Text style={styles.tipText}>Images are only loaded for businesses in this result list. Listings are limited to approved businesses.</Text></View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -149,6 +152,8 @@ const styles = StyleSheet.create({
   kicker: { color: C.burgundy, fontSize: 10, fontWeight: '900', letterSpacing: 1.5, marginTop: 6 },
   title: { color: C.ink, fontSize: 30, fontWeight: '900', letterSpacing: -0.7 },
   subtitle: { color: C.muted, fontSize: 13, lineHeight: 20, marginTop: -8 },
+  productsLink: { alignSelf: 'flex-start', backgroundColor: C.pink, borderRadius: 12, paddingHorizontal: 13, paddingVertical: 10 },
+  productsLinkText: { color: C.burgundy, fontSize: 11, fontWeight: '900' },
   searchWrap: { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 52, backgroundColor: C.white, borderRadius: 15, borderWidth: 1, borderColor: C.border, paddingHorizontal: 14 },
   searchGlyph: { color: C.burgundy, fontSize: 24 },
   searchInput: { flex: 1, minWidth: 0, color: C.ink, fontSize: 13, paddingVertical: 12 },
@@ -191,3 +196,4 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.75 },
   disabled: { opacity: 0.65 },
 });
+
