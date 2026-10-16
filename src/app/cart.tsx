@@ -1,3 +1,4 @@
+import BackButton from '@/components/back-button';
 ﻿import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -151,7 +152,7 @@ export default function CartScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} style={styles.back}><Text style={styles.backText}>â€¹ Back to shopping</Text></Pressable>
+        <BackButton fallback="/products" label="Back to shopping" />
         <Text style={styles.kicker}>YOUR ADADI ORDER</Text>
         <Text style={styles.title}>Cart & checkout</Text>
         <Text style={styles.subtitle}>Secure Paystack checkout. Your final amount and business split are calculated by ADADIâ€™s server.</Text>
