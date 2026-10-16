@@ -1,3 +1,4 @@
+import BackButton from '@/components/back-button';
 ﻿import { useLocalSearchParams, router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -59,7 +60,7 @@ export default function ExploreScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-        <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} style={styles.back}><Text style={styles.backText}>â€¹  Back</Text></Pressable>
+        <BackButton fallback="/" />
         <Text style={styles.kicker}>THE CAMPUS DIRECTORY</Text>
         <Text style={styles.title}>Explore ADADI</Text>
         <Text style={styles.subtitle}>Find a business, service or product around the DUFUHS community.</Text>
